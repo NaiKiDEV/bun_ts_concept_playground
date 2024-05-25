@@ -1,6 +1,11 @@
 type Some<T> = { value: T };
 type None<E extends Error> = { error: E | Error };
 
+enum OptionType {
+  Some,
+  None,
+}
+
 // TODO: Doesn't really work for functional programming
 // Should I do prototype injection for these?
 type OptionMethods = {
@@ -14,34 +19,40 @@ type OptionMethods = {
   //   ) => option is None<E>;
 };
 
-type Option<T, E extends Error> = OptionMethods & (Some<T> | None<E>);
+type OptionExtensions = {
+  optionType: OptionType;
+};
+
+type Option<T, E extends Error> = OptionMethods &
+  OptionExtensions &
+  (Some<T> | None<E>);
 
 const unwrapValue = <T, E extends Error>(option: Option<T, E>): T => {
-  if (!("value" in option)) {
+  if (option.optionType === OptionType.None) {
     throw new Error("Option is None");
   }
 
-  return option.value;
+  return (option as Some<T>).value;
 };
 
 const unwrapError = <T, E extends Error>(option: Option<T, E>): E | Error => {
-  if ("value" in option) {
+  if (option.optionType === OptionType.Some) {
     throw new Error("Option is Some");
   }
 
-  return option.error;
+  return (option as None<E>).error;
 };
 
 const isSome = <T, E extends Error>(
   option: Partial<Option<T, E>>,
 ): option is Some<T> => {
-  return "value" in option;
+  return option.optionType === OptionType.Some;
 };
 
 const isNone = <T, E extends Error>(
   option: Partial<Option<T, E>>,
 ): option is None<E> => {
-  return "error" in option;
+  return option.optionType === OptionType.None;
 };
 
 const optionMethods: OptionMethods = {
@@ -64,12 +75,14 @@ const createOption = <T, E extends Error>(
     return {
       ...optionMethods,
       error: value as E,
+      optionType: OptionType.None,
     };
   }
 
   return {
     ...optionMethods,
     value,
+    optionType: OptionType.Some,
   };
 };
 
@@ -140,4 +153,4 @@ export {
   createLazySyncAction,
   createLazyAsyncAction,
 };
-export type { OptionMethods, Some, None, Option };
+export type { OptionMethods, Some, None, Option, OptionType };

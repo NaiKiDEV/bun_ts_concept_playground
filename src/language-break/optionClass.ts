@@ -1,12 +1,12 @@
-enum OptionType {
+enum OptionTypeC {
   Some,
   None,
 }
 
 class OptionC<T, E extends Error> {
-  private value: T | null = null;
-  private error: E | null = null;
-  private optionType: OptionType | undefined;
+  private value: T | undefined;
+  private error: E | undefined;
+  private optionType: OptionTypeC | undefined;
 
   constructor(value: T | E | Error) {
     if (
@@ -17,35 +17,35 @@ class OptionC<T, E extends Error> {
         "name" in value)
     ) {
       this.error = value as E;
-      this.optionType = OptionType.None;
+      this.optionType = OptionTypeC.None;
     } else {
       this.value = value as T;
-      this.optionType = OptionType.Some;
+      this.optionType = OptionTypeC.Some;
     }
   }
 
   unwrapValue(): T {
-    if (this.value === null) {
+    if (this.optionType === OptionTypeC.None) {
       throw new Error("Option is None");
     }
 
-    return this.value;
+    return this.value!;
   }
 
-  unwrapError(): E | Error {
-    if (this.error === null) {
+  unwrapError(): E {
+    if (this.optionType === OptionTypeC.Some) {
       throw new Error("Option is Some");
     }
 
-    return this.error;
+    return this.error!;
   }
 
   isSome(): boolean {
-    return this.optionType === OptionType.Some;
+    return this.optionType === OptionTypeC.Some;
   }
 
   isNone(): boolean {
-    return this.optionType === OptionType.None;
+    return this.optionType === OptionTypeC.None;
   }
 }
 
@@ -111,6 +111,7 @@ const createLazyAsyncActionC =
   () =>
     invokeAsyncActionC<T, E>(callback);
 
+export type { OptionTypeC };
 export {
   OptionC,
   createOptionC,

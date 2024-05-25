@@ -68,11 +68,13 @@ describe("class based option", () => {
 
   describe("invokeSyncActionC", () => {
     it("should return option with value when callback does not throw", () => {
-      const mockCallback = mock();
+      const mockCallback = mock().mockReturnValue("foo");
+
       const option = invokeSyncActionC(mockCallback);
 
       expect(mockCallback).toBeCalledTimes(1);
       expect(option.isSome()).toBe(true);
+      expect(option.unwrapValue()).toBe("foo");
     });
 
     it("should return option with error when callback throws", () => {
@@ -83,16 +85,18 @@ describe("class based option", () => {
 
       expect(mockCallback).toBeCalledTimes(1);
       expect(option.isNone()).toBe(true);
+      expect(option.unwrapError()).toEqual(new Error("Mock Error"));
     });
   });
 
   describe("invokeAsyncActionC", () => {
     it("should return option with value when callback does not throw", async () => {
-      const mockCallback = mock();
+      const mockCallback = mock().mockReturnValueOnce("foo");
       const option = await invokeAsyncActionC(mockCallback);
 
       expect(mockCallback).toBeCalledTimes(1);
       expect(option.isSome()).toBe(true);
+      expect(option.unwrapValue()).toBe("foo");
     });
 
     it("should return option with error when callback throws", async () => {
@@ -104,6 +108,7 @@ describe("class based option", () => {
 
       expect(mockCallback).toBeCalledTimes(1);
       expect(option.isNone()).toBe(true);
+      expect(option.unwrapError()).toEqual(new Error("Mock Error"));
     });
   });
 });
