@@ -1,10 +1,10 @@
-type Some<T> = { value: T };
-type None<E extends Error> = { error: E | Error };
-
 enum OptionType {
   Some,
   None,
 }
+
+type Some<T> = { value: T; optionType: OptionType.Some };
+type None<E extends Error> = { error: E | Error; optionType: OptionType.None };
 
 // TODO: Doesn't really work for functional programming
 // Should I do prototype injection for these?
@@ -32,7 +32,7 @@ const unwrapValue = <T, E extends Error>(option: Option<T, E>): T => {
     throw new Error("Option is None");
   }
 
-  return (option as Some<T>).value;
+  return option.value;
 };
 
 const unwrapError = <T, E extends Error>(option: Option<T, E>): E | Error => {
@@ -40,7 +40,7 @@ const unwrapError = <T, E extends Error>(option: Option<T, E>): E | Error => {
     throw new Error("Option is Some");
   }
 
-  return (option as None<E>).error;
+  return option.error;
 };
 
 const isSome = <T, E extends Error>(
