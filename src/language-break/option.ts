@@ -19,13 +19,7 @@ type OptionMethods = {
   //   ) => option is None<E>;
 };
 
-type OptionExtensions = {
-  optionType: OptionType;
-};
-
-type Option<T, E extends Error> = OptionMethods &
-  OptionExtensions &
-  (Some<T> | None<E>);
+type Option<T, E extends Error> = OptionMethods & (Some<T> | None<E>);
 
 const unwrapValue = <T, E extends Error>(option: Option<T, E>): T => {
   if (option.optionType === OptionType.None) {
