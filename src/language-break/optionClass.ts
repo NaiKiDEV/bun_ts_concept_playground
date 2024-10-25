@@ -50,13 +50,13 @@ class OptionC<T, E extends Error> {
 }
 
 const createOptionC = <T, E extends Error>(
-  value: T | E | Error,
+  value: T | E | Error
 ): OptionC<T, E> => {
   return new OptionC<T, E>(value);
 };
 
 const invokeSyncActionC = <T, E extends Error>(
-  callback: () => T,
+  callback: () => T
 ): OptionC<T, E> => {
   try {
     const result = callback();
@@ -64,16 +64,17 @@ const invokeSyncActionC = <T, E extends Error>(
     return createOptionC<T, E>(result);
   } catch (error) {
     if (
-      typeof error === "object" &&
-      error &&
-      "message" in error &&
-      "name" in error
+      error instanceof Error ||
+      (typeof error === "object" &&
+        error &&
+        "message" in error &&
+        "name" in error)
     ) {
       return createOptionC<T, E>(error as E);
     }
 
     return createOptionC<T, E>(
-      new Error(`Illegal error thrown: ${typeof error} = '${error}'`),
+      new Error(`Illegal error thrown: ${typeof error} = '${error}'`)
     );
   }
 };
@@ -84,7 +85,7 @@ const createLazySyncActionC =
     invokeSyncActionC<T, E>(callback);
 
 const invokeAsyncActionC = async <T, E extends Error>(
-  callback: () => Promise<T>,
+  callback: () => Promise<T>
 ): Promise<OptionC<T, E>> => {
   try {
     const result = await callback();
@@ -92,16 +93,17 @@ const invokeAsyncActionC = async <T, E extends Error>(
     return createOptionC<T, E>(result);
   } catch (error) {
     if (
-      typeof error === "object" &&
-      error &&
-      "message" in error &&
-      "name" in error
+      error instanceof Error ||
+      (typeof error === "object" &&
+        error &&
+        "message" in error &&
+        "name" in error)
     ) {
       return createOptionC<T, E>(error as E);
     }
 
     return createOptionC<T, E>(
-      new Error(`Illegal error thrown: ${typeof error} = '${error}'`),
+      new Error(`Illegal error thrown: ${typeof error} = '${error}'`)
     );
   }
 };

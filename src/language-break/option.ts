@@ -38,13 +38,13 @@ const unwrapError = <T, E extends Error>(option: Option<T, E>): E | Error => {
 };
 
 const isSome = <T, E extends Error>(
-  option: Partial<Option<T, E>>,
+  option: Partial<Option<T, E>>
 ): option is Some<T> => {
   return option.optionType === OptionType.Some;
 };
 
 const isNone = <T, E extends Error>(
-  option: Partial<Option<T, E>>,
+  option: Partial<Option<T, E>>
 ): option is None<E> => {
   return option.optionType === OptionType.None;
 };
@@ -57,7 +57,7 @@ const optionMethods: OptionMethods = {
 };
 
 const createOption = <T, E extends Error>(
-  value: T | E | Error,
+  value: T | E | Error
 ): Option<T, E> => {
   if (
     value instanceof Error ||
@@ -81,7 +81,7 @@ const createOption = <T, E extends Error>(
 };
 
 const invokeSyncAction = <T, E extends Error>(
-  callback: () => T,
+  callback: () => T
 ): Option<T, E> => {
   try {
     const result = callback();
@@ -89,16 +89,17 @@ const invokeSyncAction = <T, E extends Error>(
     return createOption<T, E>(result);
   } catch (error) {
     if (
-      typeof error === "object" &&
-      error &&
-      "message" in error &&
-      "name" in error
+      error instanceof Error ||
+      (typeof error === "object" &&
+        error &&
+        "message" in error &&
+        "name" in error)
     ) {
       return createOption<T, E>(error as E);
     }
 
     return createOption<T, E>(
-      new Error(`Illegal error thrown: ${typeof error} = '${error}'`),
+      new Error(`Illegal error thrown: ${typeof error} = '${error}'`)
     );
   }
 };
@@ -109,7 +110,7 @@ const createLazySyncAction =
     invokeSyncAction<T, E>(callback);
 
 const invokeAsyncAction = async <T, E extends Error>(
-  callback: () => Promise<T>,
+  callback: () => Promise<T>
 ): Promise<Option<T, E>> => {
   try {
     const result = await callback();
@@ -117,16 +118,17 @@ const invokeAsyncAction = async <T, E extends Error>(
     return createOption<T, E>(result);
   } catch (error) {
     if (
-      typeof error === "object" &&
-      error &&
-      "message" in error &&
-      "name" in error
+      error instanceof Error ||
+      (typeof error === "object" &&
+        error &&
+        "message" in error &&
+        "name" in error)
     ) {
       return createOption<T, E>(error as E);
     }
 
     return createOption<T, E>(
-      new Error(`Illegal error thrown: ${typeof error} = '${error}'`),
+      new Error(`Illegal error thrown: ${typeof error} = '${error}'`)
     );
   }
 };
