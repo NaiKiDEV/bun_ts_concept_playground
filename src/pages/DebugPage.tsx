@@ -14,7 +14,7 @@ const DebugPage = () => {
   const [responses, setResponses] = useState<Response[]>([
     {
       prompt: "1+1",
-      result: "2",
+      result: 2,
     },
   ]);
 
@@ -34,10 +34,14 @@ const DebugPage = () => {
     setValue("");
   };
 
+  const handleClear = () => {
+    setResponses([]);
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <Textarea value={replValue} onChange={handleChange} />
-      <div className="w-full flex flex-row gap-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
         <Button type="button" className="grow" onClick={handleSubmit}>
           Submit
         </Button>
@@ -45,22 +49,23 @@ const DebugPage = () => {
           type="button"
           className="grow"
           variant="secondary"
-          onClick={handleSubmit}
+          onClick={handleClear}
         >
-          Clear
+          Clear Responses
         </Button>
       </div>
       <div className="flex flex-col gap-2">
         {responses.map((response, index) => (
-          <Card key={index} className="p-4">
-            <div className="flex flex-row gap-2">
-              <div className="flex flex-col grow gap-1">
-                <strong className="text-lg">Prompt:</strong>
-                <p>{response.prompt}</p>
+          <Card key={index} className="py-2 px-2">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+              <div className="flex flex-col">
+                <strong className="text-lg">Prompt</strong>
+                {response.prompt.split("\n").map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
               </div>
-              <Separator className="h-24 shrink-0" orientation="vertical" />
-              <div className="flex flex-col grow gap-1">
-                <strong className="text-lg">Result:</strong>
+              <div className="flex flex-col grow shrink-0 gap-1">
+                <strong className="text-lg">Result</strong>
                 <p>{JSON.stringify(response.result)}</p>
               </div>
             </div>
